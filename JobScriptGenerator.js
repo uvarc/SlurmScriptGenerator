@@ -437,39 +437,17 @@ ScriptGen.prototype.retrieveValues = function() {
 				isValidConfiguration = false;
 				break;
 			case "gpu":
-				if (this.values.gres == "H200"){
-					// Check for H200 gpu partition constraints specifically 
-					if (this.values.gpus <= 0) {
-						this.inputs.num_gpus.value = 1;
-					}
-					if (this.values.gpus > 4) {
-						this.inputs.num_gpus.value = 4;
-						showAlert("Maximum gres per gpu for this gpu partition exceeded.");
-					} else if (this.values.num_nodes > 1) {
-						this.inputs.num_nodes.value = 1;
-						showAlert("Maximum Nodes per Job for this gpu partition is 1.");
-					} else if (this.values.cpus_per_task > 96) {
-						this.inputs.cpus_per_task.value = 96;
-						showAlert("Maximum Cores per User for the H200 GPU partition exceeded.");
-					} else {
-						break;
-					}
-					
+				if (this.values.gpus == 0) {
+					this.inputs.num_gpus.value = 1;
 				}
-				else {
-					// Check for gpu partition constraints
-					if (this.values.gpus == 0) {
-						this.inputs.num_gpus.value = 1;
-					}
-					if (this.values.gpus > 32) {
-						this.inputs.num_gpus.value = 32;
-						showAlert("Maximum gres per gpu for gpu partition exceeded.");
-					} else if (this.values.num_nodes > 4) {
-						this.inputs.num_nodes.value = 4;
-						showAlert("Maximum Nodes per Job for gpu partition is 4.");
-					} else {
-						break;
-					}
+				if (this.values.gpus > 32) {
+					this.inputs.num_gpus.value = 32;
+					showAlert("Maximum gres per gpu for gpu partition exceeded.");
+				} else if (this.values.num_nodes > 4) {
+					this.inputs.num_nodes.value = 4;
+					showAlert("Maximum Nodes per Job for gpu partition is 4.");
+				} else {
+					break;
 				}
 				isValidConfiguration = false;
 				break;
@@ -652,7 +630,7 @@ function calculateSU(values) {
 		afton_a40: { SU_CPU_hr: 0.34022142, SU_GB_hr: 0.0198326, SU_GPU_hr: 18.6689663 },
 		l_a100_40gb: { SU_CPU_hr: 0.31058399, SU_GB_hr: 0.02915348, SU_GPU_hr: 46.3805426 },
 		l_a100_80gb: { SU_CPU_hr: 0.403, SU_GB_hr: 0.043, SU_GPU_hr: 50.89},
-		afton_H200: { SU_CPU_hr: 0.4, SU_GB_hr: 0.0269, SU_GPU_hr: 81.667 },
+		// afton_H200: { SU_CPU_hr: 0.4, SU_GB_hr: 0.0269, SU_GPU_hr: 81.667 },
 		basepod: { SU_CPU_hr: 0.40287202, SU_GB_hr: 0.04342536, SU_GPU_hr: 50.8890976 }
 	};
 
@@ -690,7 +668,7 @@ function calculateSU(values) {
 								gpuPricing = pricing.l_a100_80gb;
 							}
 							break;
-						case 'H200': gpuPricing = pricing.afton_H200; break;
+						// case 'H200': gpuPricing = pricing.afton_H200; break;
 						default: gpuPricing = pricing.basepod;
 					}
 					aftonCost = nhour * (ngcore * gpuPricing.SU_GPU_hr + ncore * gpuPricing.SU_CPU_hr + tmem * gpuPricing.SU_GB_hr);
